@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penerimaan BBM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f4;--surface:#fff;--ink:#14212b;--mute:#566673;--line:#d5dce2;--on:#fff;
+--c1:#9a6208;--c2:#2c6a8c;--c3:#3f7050;--c4:#7d4f90;--c5:#5d6b75;--warn:#a4452c;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f171d;--surface:#17222a;--ink:#e7edf1;--mute:#93a4b0;--line:#2a3944;--on:#0f171d;
+--c1:#e0a43c;--c2:#5aa3c7;--c3:#7fb58d;--c4:#bf95d1;--c5:#9aa8b2;--warn:#ef8b72;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f171d;--surface:#17222a;--ink:#e7edf1;--mute:#93a4b0;--line:#2a3944;--on:#0f171d;
+--c1:#e0a43c;--c2:#5aa3c7;--c3:#7fb58d;--c4:#bf95d1;--c5:#9aa8b2;--warn:#ef8b72;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:clamp(16px,4vw,40px)}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-end;margin-bottom:24px}
+h1{font:600 1.75rem/1.1 'Barlow Condensed',sans-serif;margin:0}
+.src{margin:4px 0 0;color:var(--mute);font-size:.9rem}
+.act{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:.875rem}
+button{font:inherit;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 14px;min-height:40px;cursor:pointer}
+button:hover{border-color:var(--mute)}
+button:focus-visible{outline:2px solid var(--c2);outline-offset:2px}
+button[disabled]{opacity:.55;cursor:default}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,4vw,32px)}
+.panel+.panel{margin-top:16px}
+#daily:empty{display:none}
+.lbl{display:block;color:var(--mute)}
+.num{font:500 clamp(3.2rem,13vw,6.4rem)/1 'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
+.unit{font:500 1.5rem 'Barlow Condensed',sans-serif;color:var(--mute);margin-left:8px}
+.bar{display:flex;gap:3px;height:44px;margin:24px 0 4px}
+.seg{flex-basis:0;min-width:4px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--on);font-weight:600;font-size:.85rem;overflow:hidden}
+ul{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
+li{display:grid;grid-template-columns:14px 1fr auto 56px;gap:12px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.sw{width:14px;height:14px;border-radius:3px;align-self:center}
+.v{font-weight:500;font-variant-numeric:tabular-nums}
+.p{text-align:right;color:var(--mute);font-variant-numeric:tabular-nums}
+.note{margin:16px 0 0;color:var(--mute);font-size:.9rem}
+.msg h2{font:600 1.25rem/1.2 'Barlow Condensed',sans-serif;margin:0 0 6px}
+.msg p{margin:0;color:var(--mute);max-width:60ch}
+.ttl{font:600 1.25rem/1.2 'Barlow Condensed',sans-serif;margin:0 0 12px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 16px;font-size:.9rem}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.chart{display:flex;gap:10px}
+.yax{display:flex;flex-direction:column;justify-content:space-between;height:200px;color:var(--mute);font-size:.75rem;line-height:1;text-align:right;font-variant-numeric:tabular-nums}
+.cw{flex:1;min-width:0;position:relative}
+.grid{position:absolute;left:0;right:0;top:0;height:200px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none}
+.grid::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+.cols{position:relative;display:flex;gap:clamp(4px,1.5vw,12px)}
+.col{flex:1;min-width:0;border-radius:4px;outline-offset:2px}
+.col:hover,.col.on{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.col:focus-visible{outline:2px solid var(--c2)}
+.stack{height:200px;display:flex;flex-direction:column-reverse}
+.blk{border-top:1px solid var(--surface)}
+.xl{display:block;margin-top:6px;text-align:center;font-size:.75rem;color:var(--mute);white-space:nowrap}
+.tip{position:absolute;top:0;z-index:2;pointer-events:none;min-width:190px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.85rem;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.tip[hidden]{display:none}
+.tip b{display:block;margin-bottom:6px}
+.tip div{display:flex;align-items:center;gap:8px}
+.tip div span:last-child{margin-left:auto;font-variant-numeric:tabular-nums}
+.tip i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.tip .sum{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>Penerimaan BBM</h1>
+    <p class="src">Sumber: logbook terima BBM, tab Sheet1</p>
+  </div>
+  <div class="act"><span id="stamp" role="status"></span><button id="refresh" type="button" disabled>Segarkan</button></div>
+</header>
+<section id="view" class="panel" aria-live="polite"><div class="msg"><p>Memuat data dari Google Drive. File besar bisa butuh beberapa detik…</p></div></section>
+<section id="daily" class="panel"></section>
+</main>
+<script>
+(function(){
+var SERVER='Google Drive',TOOL='download_file_content',FILE_ID='1kFOHFBdShLZFUmO-7WSAQ23e7DE6zR0F5-koTQHzOPM';
+var view=document.getElementById('view'),daily=document.getElementById('daily'),stamp=document.getElementById('stamp'),btn=document.getElementById('refresh');
+var nf=new Intl.NumberFormat('id-ID'),pf=new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
+var DAYS=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+var mcp=null,busy=false,hasData=false;
+
+function h(tag,attrs){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==='class')e.className=attrs[k];else e.setAttribute(k,attrs[k])}
+  for(var i=2;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;e.appendChild(typeof c==='string'?document.createTextNode(c):c)}return e}
+function put(node){view.replaceChildren(node)}
+function message(title,body){put(h('div',{class:'msg'},h('h2',null,title),h('p',null,body)))}
+function col(i){return'var(--c'+((i%5)+1)+')'}
+
+function b64(s){var bin=atob(s),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder('utf-8').decode(u)}
+function csv(text){var rows=[],row=[],f='',q=false;
+  for(var i=0;i<text.length;i++){var c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===','){row.push(f);f=''}
+    else if(c==='\n'){row.push(f);rows.push(row);row=[];f=''}else if(c!=='\r')f+=c}
+  row.push(f);rows.push(row);return rows}
+function num(s){if(s==null)return NaN;s=String(s).trim();if(!/^-?[\d.,\s]+$/.test(s))return NaN;
+  return parseFloat(s.replace(/[.\s]/g,'').replace(',','.'))}
+function pad(n){return n<10?'0'+n:''+n}
+function ymd(dt){return dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate())}
+function parseDate(s){var m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/),y,mo,d;
+  if(m){d=+m[1];mo=+m[2];y=+m[3];if(mo>12&&d<=12){var t=d;d=mo;mo=t}}
+  else{m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(!m)return null;y=+m[1];mo=+m[2];d=+m[3]}
+  var dt=new Date(y,mo-1,d);return dt.getMonth()===mo-1?dt:null}
+function nameKey(raw){return raw.toLowerCase().replace(/^(pt|cv)\.?\s+/,'')}
+function nameLabel(raw){return raw.replace(/^(pt|cv)\.?\s+/i,'')}
+
+function extract(grid){
+  var tb=null;
+  for(var r=0;r<Math.min(grid.length,30)&&!tb;r++)for(var c=0;c<grid[r].length;c++)if(/^tanggal$/i.test((grid[r][c]||'').trim())){tb={r:r,c:c};break}
+  if(!tb)throw{code:'bad_shape'};
+  var vi=-1,ni=-1;
+  grid[tb.r].forEach(function(x,i){x=(x||'').trim().toLowerCase();if(x==='volume'&&vi<0)vi=i;if(x==='transportir'&&ni<0)ni=i});
+  if(vi<0||ni<0)throw{code:'bad_shape'};
+  var today=new Date();today.setHours(0,0,0,0);
+  var mStart=new Date(today.getFullYear(),today.getMonth(),1),wStart=new Date(today);wStart.setDate(today.getDate()-6);
+  var monthK=ymd(mStart),fromK=ymd(mStart<wStart?mStart:wStart),todayK=ymd(today),rows=[],tot={},label={};
+  for(var i=tb.r+1;i<grid.length;i++){var g=grid[i];if(!g||g.length<=ni)continue;
+    var dt=parseDate((g[tb.c]||'').trim());if(!dt)continue;var k=ymd(dt);if(k<fromK||k>todayK)continue;
+    var v=num(g[vi]);if(isNaN(v))continue;var raw=(g[ni]||'').trim().replace(/\s+/g,' ')||'Tanpa nama',nk=nameKey(raw);
+    if(!label[nk])label[nk]=nameLabel(raw);tot[nk]=(tot[nk]||0)+v;rows.push({k:k,v:v,nk:nk})}
+  var keys=Object.keys(tot).sort(function(a,b){return tot[b]-tot[a]}),idx={},names=[];
+  var cap=keys.length>5?4:keys.length;
+  keys.forEach(function(k,i){if(i<cap){idx[k]=i;names.push(label[k])}else idx[k]=cap});
+  if(keys.length>5)names.push('Lainnya');
+  var n=names.length,mParts=names.map(function(x,i){return{label:x,value:0,i:i}}),map={},count=0,mTotal=0;
+  rows.forEach(function(x){var i=idx[x.nk];
+    if(x.k>=monthK){mParts[i].value+=x.v;mTotal+=x.v;count++}
+    var a=map[x.k]||(map[x.k]=names.map(function(){return 0}));a[i]+=x.v});
+  return{month:{name:today.toLocaleDateString('id-ID',{month:'long',year:'numeric'}),total:mTotal,count:count,
+    parts:mParts.filter(function(p){return p.value>0})},names:names,map:map,n:n}}
+function payloadOf(res){var p=res&&res.payload;
+  if(typeof p==='string'){try{p=JSON.parse(p)}catch(e){}}
+  if(!p||typeof p.content!=='string')throw{code:'bad_shape'};return p.content}
+
+function render(d){
+  var m=d.month,wrap=h('div');
+  wrap.appendChild(h('span',{class:'lbl'},'Total penerimaan, '+m.name));
+  wrap.appendChild(h('div',null,h('span',{class:'num'},nf.format(m.total)),h('span',{class:'unit'},'liter')));
+  if(m.parts.length){
+    var bar=h('div',{class:'bar',role:'img'}),list=h('ul'),desc=[];
+    m.parts.forEach(function(p){var pct=p.value/m.total*100;desc.push(p.label+' '+pf.format(pct)+' persen');
+      bar.appendChild(h('div',{class:'seg',style:'flex-grow:'+p.value+';background:'+col(p.i)},pct>=12?pf.format(pct)+'%':''));
+      list.appendChild(h('li',null,h('span',{class:'sw',style:'background:'+col(p.i)}),h('span',null,p.label),
+        h('span',{class:'v'},nf.format(p.value)+' L'),h('span',{class:'p'},pf.format(pct)+'%')))});
+    bar.setAttribute('aria-label','Porsi per transportir: '+desc.join(', '));
+    wrap.appendChild(bar);wrap.appendChild(list)}
+  wrap.appendChild(h('p',{class:'note'},m.count?'Dihitung dari '+nf.format(m.count)+' baris pengiriman di Sheet1 (kolom Volume), tanggal 1 sampai hari ini.':'Belum ada penerimaan tercatat bulan ini di Sheet1.'));
+  put(wrap);hasData=true}
+
+function niceMax(m){if(m<=0)return 1000;var p=Math.pow(10,Math.floor(Math.log10(m))),n=m/p;return(n<=1?1:n<=2?2:n<=5?5:10)*p}
+function renderDaily(d){
+  var box=h('div'),today=new Date();today.setHours(0,0,0,0);
+  box.appendChild(h('h2',{class:'ttl'},'Penerimaan harian, 7 hari terakhir'));
+  var data=[];
+  for(var i=6;i>=0;i--){var dt=new Date(today);dt.setDate(today.getDate()-i);
+    var v=d.map[ymd(dt)]||d.names.map(function(){return 0});
+    data.push({dt:dt,v:v,sum:v.reduce(function(a,b){return a+b},0)})}
+  var max=Math.max.apply(null,data.map(function(x){return x.sum})),top=niceMax(max),grand=data.reduce(function(a,x){return a+x.sum},0);
+  if(grand<=0){box.appendChild(h('p',{class:'note'},'Tidak ada penerimaan tercatat pada 7 hari terakhir di Sheet1.'));daily.replaceChildren(box);return}
+  var leg=h('div',{class:'leg'});
+  d.names.forEach(function(n,i){leg.appendChild(h('span',null,h('i',{style:'background:'+col(i)}),n))});
+  box.appendChild(leg);
+  var ax=h('div',{class:'yax'});[top,top/2,0].forEach(function(v){ax.appendChild(h('span',null,nf.format(v)))});
+  var cols=h('div',{class:'cols'}),tip=h('div',{class:'tip',role:'tooltip'}),cw=h('div',{class:'cw'},h('div',{class:'grid'}),cols,tip),current=null;
+  tip.hidden=true;
+  function show(c,x){
+    if(current)current.classList.remove('on');current=c;c.classList.add('on');
+    tip.replaceChildren(h('b',null,x.dt.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})));
+    d.names.forEach(function(n,i){tip.appendChild(h('div',null,h('i',{style:'background:'+col(i)}),h('span',null,n),h('span',null,nf.format(x.v[i])+' L')))});
+    tip.appendChild(h('div',{class:'sum'},h('span',null,'Total'),h('span',null,nf.format(x.sum)+' L')));
+    tip.hidden=false;
+    var w=cw.clientWidth,tw=tip.offsetWidth,mid=c.offsetLeft+c.offsetWidth/2;
+    tip.style.left=Math.max(0,Math.min(w-tw,mid-tw/2))+'px'}
+  function hide(){if(current)current.classList.remove('on');current=null;tip.hidden=true}
+  data.forEach(function(x){
+    var stack=h('div',{class:'stack'}),lab=DAYS[x.dt.getDay()]+' '+x.dt.getDate()+'/'+(x.dt.getMonth()+1);
+    x.v.forEach(function(v,i){if(v>0)stack.appendChild(h('div',{class:'blk',style:'height:'+(v/top*100)+'%;background:'+col(i)}))});
+    var c=h('div',{class:'col',tabindex:'0',role:'group','aria-label':lab+': '+d.names.map(function(n,i){return n+' '+nf.format(x.v[i])+' L'}).join(', ')+', total '+nf.format(x.sum)+' L'},stack,h('span',{class:'xl'},lab));
+    c.addEventListener('pointerenter',function(){show(c,x)});
+    c.addEventListener('focus',function(){show(c,x)});
+    c.addEventListener('click',function(){show(c,x)});
+    cols.appendChild(c)});
+  cols.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hide()});
+  cols.addEventListener('focusout',hide);
+  box.appendChild(h('div',{class:'chart'},ax,cw));
+  box.appendChild(h('p',{class:'note'},'Total 7 hari: '+nf.format(grand)+' L. Arahkan kursor atau ketuk tiap hari untuk melihat rincian per transportir. Tanggal di sheet dibaca sebagai hari/bulan/tahun.'));
+  daily.replaceChildren(box)}
+
+var AUTHZ={needs_reauth:1,server_not_connected:1,not_in_manifest:1,blocked_by_policy:1,approval_required:1,selection_required:1};
+function explain(e){var c=e&&e.code,msg=e&&e.message?String(e.message).slice(0,200):'';
+  switch(c){
+    case'server_not_connected':return['Google Drive belum tersambung','Tambahkan Google Drive di claude.ai, Settings, Connectors, lalu muat ulang halaman ini.'];
+    case'needs_reauth':return['Sambungan Google Drive perlu dihubungkan ulang','Hubungkan ulang di claude.ai, Settings, Connectors, lalu tekan Segarkan.'];
+    case'selection_required':return['Ada lebih dari satu sambungan Google Drive','Pilih salah satu saat diminta, lalu muat ulang halaman ini.'];
+    case'not_in_manifest':return['Akses Google Drive belum diizinkan','Halaman ini hanya membaca satu file. Izinkan aksesnya saat diminta claude.ai, lalu tekan Segarkan.'];
+    case'approval_required':return['Menunggu persetujuan Anda','Tekan Segarkan, lalu setujui permintaan akses Google Drive.'];
+    case'blocked_by_policy':return['Akses dibatasi kebijakan organisasi','Organisasi Anda memblokir pembacaan file Google Drive dari halaman ini.'];
+    case'tool_error':return['Google Drive melaporkan kesalahan',msg||'File tidak bisa dibaca. Pastikan Anda masih punya akses ke sheet-nya.'];
+    case'server_unavailable':case'upstream_error':return['Google Drive tidak merespons','File ini besar. Coba lagi beberapa saat lagi.'];
+    case'bad_shape':return['Isi tab pertama tidak bisa dibaca','Tab pertama di sheet harus Sheet1, dengan judul kolom Tanggal, Volume, dan Transportir. Kalau urutan tab berubah, atau file terlalu besar sehingga terpotong, data tidak terbaca.'];
+    default:return['Data belum bisa dimuat',msg||'Coba lagi sebentar lagi.']}}
+function noMcp(){message('Perlu konektor Google Drive','Dashboard ini membaca data langsung dari Google Drive, jadi buka di claude.ai dengan akun yang sudah menyambungkan Google Drive dan punya akses ke sheet logbook terima BBM.')}
+
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function fetchOnce(){
+  var res=await mcp.callTool(SERVER,TOOL,{fileId:FILE_ID,exportMimeType:'text/csv'},{cache:false});
+  var text;try{text=b64(payloadOf(res))}catch(e){throw{code:'bad_shape'}}
+  return extract(csv(text))}
+async function load(){
+  if(busy||!mcp)return;busy=true;btn.disabled=true;
+  try{
+    var d;
+    try{d=await fetchOnce()}catch(e){
+      if(e&&e.retryable){await sleep((e.retryAfterMs||1500)+Math.random()*1000);d=await fetchOnce()}else throw e}
+    render(d);renderDaily(d);stamp.textContent='Diperbarui '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    var code=e&&e.code;
+    if(hasData&&!AUTHZ[code]&&code!=='bad_shape'){stamp.textContent='Gagal memperbarui, data lama ditampilkan'}
+    else{var x=explain(e);message(x[0],x[1]);daily.replaceChildren();stamp.textContent='';hasData=false}
+  }finally{busy=false;btn.disabled=false}}
+
+btn.addEventListener('click',load);
+setInterval(function(){if(!document.hidden)load()},300000);
+if(!window.claude||!claude.use){noMcp()}
+else claude.use('mcp').then(function(m){if(!m){noMcp();return}mcp=m;btn.disabled=false;load()},noMcp);
+})();
+</script>
+</body>
+</html>
